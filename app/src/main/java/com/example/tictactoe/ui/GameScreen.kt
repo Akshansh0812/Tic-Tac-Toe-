@@ -1,7 +1,10 @@
 package com.example.tictactoe.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -22,7 +25,10 @@ import com.example.tictactoe.ui.theme.BlueCustom
 import com.example.tictactoe.ui.theme.GrayBackground
 
 @Composable
-fun GameScreen(){
+fun GameScreen(
+    viewModel: GameViewModel
+){
+    val state = viewModel.state
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,6 +66,36 @@ fun GameScreen(){
             contentAlignment = Alignment.Center
         ){
             BoardBase()
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .aspectRatio(1f),
+                columns = GridCells.Fixed(3)
+            ){
+                viewModel.boardItems.forEach{(cellNo, boardCellValue)->
+                    item {
+                        Column (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                                .clickable {
+                                    viewModel.onAction(
+                                        UserActions.BoardTapped(cellNo)
+                                    )
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            if(boardCellValue == BoardCellValue.CIRCLE){
+                                Circle()
+                            }
+                            else if(boardCellValue == BoardCellValue.CROSS){
+                                Cross()
+                            }
+                        }
+                    }
+                }
+            }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -89,5 +125,7 @@ fun GameScreen(){
 @Preview
 @Composable
 fun Prev(){
-    GameScreen()
+    GameScreen(
+        viewModel = GameViewModel()
+    )
 }
